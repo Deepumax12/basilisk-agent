@@ -143,6 +143,30 @@ Commands inside a session:
 | `/new` | fresh conversation (notes and runs are kept) |
 | `/exit` | quit; background simulations keep running |
 
+### Problem types and where the agent starts
+
+The agent starts from the closest validated case in your Basilisk tree. These were checked against the Basilisk source of October 2026:
+
+| Problem | Starting point in `$BASILISK` |
+|---|---|
+| Rising bubble | `test/rising.c` (Hysing benchmark, 2D and axisymmetric), `examples/bubble.c` (3D) |
+| Drop | `test/oscillation.c` (shape oscillation), `test/sessile.c` (contact angle), `test/fall.c` (drop impact) |
+| Waves | `test/capwave.c` (capillary wave vs Prosperetti), `test/dispersion_gravitocap.c`, `examples/breaking.c` |
+| Pipe flow | `test/poiseuille-axi.c`, `test/pipe-axi-embed.c` (developing flow) |
+| Inclined flow | `test/poiseuille45.c` (gravity-driven flow in a channel inclined at 45°) |
+| Cylinder wake, cavity, turbulence | `examples/karman.c`, `test/lid.c`, `examples/isotropic.c` |
+| **Taylor bubble, falling film** | no ready-made case: the agent combines the pieces above and validates against correlations (Taylor bubble) or the Nusselt film solution (falling film) |
+
+For a Taylor bubble or another problem you have already solved, point the agent at your own validated code, for example
+`basilisk-agent --allow-read ~/sims/taylor_bubble "Adapt my Taylor bubble code in ~/sims/taylor_bubble to Eo = 20 ..."`.
+Adapting good code is far more reliable than writing it from scratch, especially with a local model.
+
+To check that your Basilisk install handles these problem types, run Basilisk's own regression tests. Each one compares with reference results and can take several minutes:
+
+```bash
+cd $BASILISK/test && make rising.tst oscillation.tst capwave.tst poiseuille-axi.tst poiseuille45.tst
+```
+
 ## 4. Without any AI: `sim` commands
 
 ```bash

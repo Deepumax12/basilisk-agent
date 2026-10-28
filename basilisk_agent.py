@@ -53,7 +53,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 
 # --------------------------------------------------------------------------
 # Configuration
@@ -1766,6 +1766,19 @@ Give the user short progress messages at milestones (plan, smoke test result, ru
 - Diagnostics: statsf (gives sum, min, max, volume...), normf, interpolate, foreach() loops with reduction (+:x).
 - Output: dump () and restore (file = ...) for snapshots and restarts (a common init pattern: if (!restore (file = "restart")) { set the initial condition }); output_facets (f, fp) for interfaces; output_field ({...}, fp, n, linear) for interpolated uniform fields; output_ppm and view.h (squares, draw_vof, box, save ("file.png")) for images and movies (need ffmpeg or ImageMagick for mp4/png).
 - Resolution: adapt first and keep uniform grids small, especially in 3D (a uniform level L in 3D has 8^L cells). Reason in cells per characteristic length (for example cells per bubble diameter, per film thickness, per boundary-layer thickness) and justify the maximum level. Basilisk is unit-agnostic: work non-dimensionally unless dimensional output is requested.
+
+# Starting points in the Basilisk tree (paths relative to $BASILISK; confirm they exist in the user's version)
+- Rising bubbles: test/rising.c (2D benchmark of Hysing et al. 2009, reference results in test/rising.ref, axisymmetric variants rising-axi*), examples/bubble.c (3D bubble in a large tank), test/axi_rising_bubble.c (axisymmetric bubble with soluble gas).
+- Drops: test/oscillation.c (capillary shape oscillation of a droplet), test/sessile.c (sessile drop and contact angle), test/fall.c (axisymmetric viscoelastic drop impact on a solid), examples/atomisation.c (jet atomisation).
+- Waves: test/capwave.c (damped capillary wave vs Prosperetti's solution), test/dispersion_gravitocap.c (gravito-capillary dispersion relation), examples/breaking.c (breaking Stokes wave).
+- Pipe and channel flows: test/poiseuille-axi.c (axisymmetric Poiseuille pipe flow), test/pipe-axi-embed.c (developing pipe flow with embedded walls), test/poiseuille-periodic.c, test/poiseuille45.c (gravity-driven flow in a channel inclined at 45 degrees).
+- Single-phase classics: test/lid.c (lid-driven cavity at Re 1000), test/taylor-green.c, examples/karman.c (vortex street behind a cylinder with embed.h), examples/isotropic.c (3D turbulence), test/rt.c (Rayleigh-Taylor instability).
+- Shallow water and long waves: examples/tsunami.c, test/bore.c (undular bores, Green-Naghdi).
+- No direct example; combine pieces and validate carefully:
+  - Taylor bubbles in tubes: axisymmetric two-phase as in the rising-bubble tests, with no-slip conditions on the tube wall (the top boundary y = R in axi.h) or embed.h walls as in pipe-axi-embed.c, and a domain long enough for the bubble and its wake. Validate the Froude number against correlations (for example Viana et al. 2003).
+  - Falling films on inclined planes: two-phase in a periodic domain with gravity tilted through the G vector of reduced.h. Validate the flat-film velocity profile against the Nusselt solution.
+  - If the user has their own validated code for such a problem (folders allowed with --allow-read), adapt it rather than starting from scratch.
+- Basilisk's own regression tests run with make <name>.tst inside $BASILISK/test and compare with the .ref files. Copy a case into the workspace before modifying it; never edit the Basilisk tree.
 
 # Analysis and visualisation
 - Basilisk outputs are whitespace-separated columns (gnuplot-style blocks separated by blank lines); output_facets writes segment end points as pairs of lines.
